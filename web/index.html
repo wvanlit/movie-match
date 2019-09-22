@@ -46,13 +46,19 @@
 </div>
 <div id="fb-root"></div>
 <script src="js/auto-complete.js"></script>
+<script src="js/movieList.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
     var movie = new autoComplete({
     selector: '#movielist',
     minChars: 1,
-   	source: function(term, response){
-        $.getJSON('data/movies.json', { q: term }, function(data){ response(data); });
+    source: function(term, suggest){
+        term = term.toLowerCase();
+        var choices = movieList
+        var matches = [];
+        for (i=0; i<choices.length; i++)
+            if (~choices[i].toLowerCase().indexOf(term)) matches.push(choices[i]);
+        suggest(matches);
     }
 });
 </script>

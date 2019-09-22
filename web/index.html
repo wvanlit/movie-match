@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Movie Match</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900|Quicksand:400,700|Questrial" rel="stylesheet" />
+<link href="default.css" rel="stylesheet" type="text/css" media="all" />
+<link href="fonts.css" rel="stylesheet" type="text/css" media="all" />
+<link rel="stylesheet" href="js/auto-complete.css">
+
+</head>
+<body>
+<!-- JS for form -->
+<div id="header-wrapper">
+	<div id="header" class="container">
+		<div id="logo">
+			<h1><a href="#">Movie Match</a></h1>
+		</div>
+	</div>
+</div>
+<div class="wrapper">
+	<div id="welcome" class="container">
+		<div class="title">
+			<h2>Find Your Next Movie</h2>
+		</div>
+		<p>This is <strong>Movie Match</strong>, a free recommendation engine for movies. <br>Just enter a movie you like and it will give you some other ones that you also might like.</p>
+
+		<form onsubmit="return false;" class="pure-form" style="padding:20px 10px;text-align:center">
+        <input id="movielist" autofocus type="text" name="q" placeholder="Movie ..." style="width:100%;max-width:600px;outline:0">
+    	</form>
+		
+	</div>
+	
+	<div id="content" class="container">
+		<div class="title">
+			<h3>API Documentation</h3>
+		</div>
+
+		<p>Requests can be send to <a href="http://litdev.nl/movie-match/request">litdev.nl/movie-match/request</a></p>
+	</div>
+</div>
+<div id="copyright">
+	<p>Made by <a href="http://litdev.nl">Wessel van Lit</a> | Design altered from template by <a href="http://templated.co" rel="nofollow">TEMPLATED</a>.</p>
+</div>
+<div id="fb-root"></div>
+<script src="js/auto-complete.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    var movie = new autoComplete({
+    selector: '#movielist',
+    minChars: 1,
+   	source: function(term, response){
+        $.getJSON('data/movies.json', { q: term }, function(data){ response(data); });
+    }
+});
+</script>
+
+</body>
+</html>

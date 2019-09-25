@@ -7,7 +7,7 @@
 	{
 		margin: 0px;
 		padding: 0px;
-		background: #a7c468;
+		background: #ad2d2b;
 		font-family: 'Questrial', sans-serif;
 		font-size: 12pt;
 		color: rgba(0,0,0,.6);
@@ -315,7 +315,7 @@
 	#header-wrapper
 	{
 		overflow: hidden;
-		background: #a7c468 url(images/overlay.png) repeat;
+		background: #ad2d2b url(images/overlay.png) repeat;
 	}
 
 	#header
@@ -563,13 +563,13 @@
 	{
 		letter-spacing: 1px;
 		font-size: 0.90em;
-		color: rgba(0,0,0,0.6);
+		color: rgba(255,255,255,0.6);
 	}
 	
 	#copyright a
 	{
 		text-decoration: none;
-		color: rgba(0,0,255,0.8);
+		color: rgba(0,0,128,0.8);
 	}
 
 /*********************************************************************************/

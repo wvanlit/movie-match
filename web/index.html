@@ -8,9 +8,8 @@
 <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900|Quicksand:400,700|Questrial" rel="stylesheet" />
 <link href="default.css" rel="stylesheet" type="text/css" media="all" />
 <link href="fonts.css" rel="stylesheet" type="text/css" media="all" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link rel="stylesheet" href="js/auto-complete.css">
-
-</head>
 <body>
 <!-- JS for form -->
 <div id="header-wrapper">
@@ -30,6 +29,14 @@
 		<form onsubmit="return false;" class="pure-form" style="padding:20px 10px;text-align:center">
         <input id="movielist" autofocus type="text" name="q" placeholder="Movie ..." style="width:100%;max-width:600px;outline:0">
     	</form>
+    	<button type="button" class="btn btn-primary" onclick="recommendMovie(movielist.value)">Get Recommendation!</button>
+		
+		<h3 style="margin-top: 1em">Recommendations</h3>
+		<div class="card" style="width: 25rem; margin: auto;">
+		  <ul class="list-group list-group-flush" id="list-group" role="tablist">
+
+		  </ul>
+		</div>
 		
 	</div>
 	
@@ -41,13 +48,20 @@
 		<p>Requests can be send to <a href="http://litdev.nl/movie-match/request">litdev.nl/movie-match/request</a></p>
 	</div>
 </div>
-<div id="copyright">
-	<p>Made by <a href="http://litdev.nl">Wessel van Lit</a> | Design altered from template by <a href="http://templated.co" rel="nofollow">TEMPLATED</a>.</p>
-</div>
-<div id="fb-root"></div>
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 <script src="js/auto-complete.js"></script>
 <script src="js/movieList.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="js/movieRecommendation.js"></script>
+</head>
+
+
 <script>
     var movie = new autoComplete({
     selector: '#movielist',

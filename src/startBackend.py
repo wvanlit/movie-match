@@ -14,17 +14,27 @@ def create_relation(tx, uname, mtitle, rating):
             uname=uname, mtitle=mtitle, rating=rating)
 
 def has_relation(tx, uname, mtitle):
-	outcome = tx.run("MATCH (u:User)-[r:rated]->(m:Movie) WHERE u.username = $name and m.title = $mtitle RETURN m", 
+	outcome = tx.run("MATCH (u:User)-[r:rated]->(m:Movie) WHERE u.username = $uname and m.title = $mtitle RETURN m", 
             uname=uname, mtitle=mtitle)
 	return outcome.single() != None
 
-def recommendUser(tx, uid):
+def recommendMovie(tx, movietitle):
 	movies = ''
-	for movie in tx.run(""" MATCH (u1:User { user_id: $uid })-[r:rated]->(m:Movie)
+	for movie in tx.run('''
+		MATCH (m:Movie {title: $movietitle})<-[r1:rated]-(:User)-[r2:rated]->(o:Movie) 
+		WHERE r1.rating = 5 
+		RETURN o.title as Title, AVG(r2.rating) as Rating, COUNT(r2)*AVG(r2.rating) as Score ORDER BY Score DESC LIMIT 10''', 
+		movietitle = movietitle):
+		movies += movie['Title']+';'
+	return movies[:-1]
+
+def recommendUser(tx, uname):
+	movies = ''
+	for movie in tx.run(""" MATCH (u1:User { username: $uname })-[r:rated]->(m:Movie)
 							WITH u1, avg(r.rating) AS u1_mean
 
 							MATCH (u1)-[r1:rated]->(m:Movie)<-[r2:rated]-(u2)
-							WITH u1, u1_mean, u2, COLLECT({r1: r1, r2: r2}) AS ratings WHERE size(ratings) > 10
+							WITH u1, u1_mean, u2, COLLECT({r1: r1, r2: r2}) AS ratings WHERE size(ratings) > 3
 
 							MATCH (u2)-[r:rated]->(m:Movie)
 							WITH u1, u1_mean, u2, avg(r.rating) AS u2_mean, ratings
@@ -41,7 +51,7 @@ def recommendUser(tx, uid):
 							MATCH (u2)-[r:rated]->(m:Movie) WHERE NOT EXISTS( (u1)-[:rated]->(m) )
 
 							RETURN m.title, SUM( pearson * r.rating) AS score
-							ORDER BY score DESC LIMIT 10 """, uid=uid):
+							ORDER BY score DESC LIMIT 10 """, uname=uname):
 		movies += movie['m.title']+';'
 	return movies[:-1]
 
@@ -63,10 +73,34 @@ def checkIfUserNameExists(tx, uname):
 	else:
 		return True
 
-@app.route('/movie-match/recommend/<int:user_id>', methods=['GET'])
-def get_recommendation(user_id):
+@app.route('/movie-match/recommendUser/<username>', methods=['GET'])
+def get_user_recommendation(username):
 	with driver.session() as session:
-		return session.write_transaction(recommendUser, user_id)
+		return session.write_transaction(recommendUser, username), 201
+
+@app.route('/movie-match/recommendMovie/<movie>', methods=['GET'])
+def get_movie_recommendation(movie):
+	with driver.session() as session:
+		return session.write_transaction(recommendMovie, movie), 201
+
+# JSON : {"username":"", "title":"", rating:"":0}
+@app.route('/movie-match/addRelation', methods=['POST'])
+def add_relation():
+	if not request.json:
+		abort(400)
+	if not 'username' in request.json or not 'title' in request.json or not 'rating' in request.json:
+		abort(400)
+
+	with driver.session() as session:
+		# Check if relation already exists
+		if session.write_transaction(has_relation, request.json['username'], request.json['title']):
+			return jsonify({'error':'Relation Already Exist'}), 200
+
+		# Create new relation
+		session.write_transaction(create_relation, request.json['username'], request.json['title'], request.json['rating'])
+	return jsonify(request.json),201
+
+
 
 
 # JSON : {"name", "movies":[{"title":"", "rating":0}]}
@@ -104,3 +138,4 @@ def add_user():
 
 if __name__ == '__main__':
 	app.run(debug=False)
+	driver.close()

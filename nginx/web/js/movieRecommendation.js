@@ -1,4 +1,4 @@
-const recommendMovieUrl='http://127.0.0.1:5000/movie-match/recommendMovie/';
+const recommendMovieUrl='http://127.0.0.1/movie-match/recommendMovie/';
 const noneFound = "None Found, Try Something Else"
 
 function recommendMovie(title){
@@ -6,18 +6,22 @@ function recommendMovie(title){
 
 	removeListItems();
 
-	var s = ""
-    $.get(recommendMovieUrl+encodedTitle, function(data, status){
-    	console.log(status);
-   		if (data === ""){
-   			createListItem(noneFound);
-   		}else{
-   			s = data.split(';');
-    		s.forEach(createListItem)
-   		}    	
-    }).fail(createListItem(noneFound));
-
-	
+	$.ajax({
+        type: "GET",
+        url: recommendMovieUrl+encodedTitle,
+        success: function (result) {
+        	console.log(result);
+	   		if (result === ""){
+	   			createListItem(noneFound);
+	   		}else{
+	   			s = result.split(';');
+	    		s.forEach(createListItem)
+	   		}  
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+        	createListItem(noneFound);
+        }
+    });
 }
 
 function removeListItems(){

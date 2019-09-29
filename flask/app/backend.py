@@ -1,9 +1,10 @@
-from flask import Flask
 from flask import request, abort, jsonify
 from neo4j import GraphDatabase
+
 import credentials
 
-app = Flask(__name__)
+from app import app
+
 driver = GraphDatabase.driver(credentials.neo4j_url, auth=(credentials.neo4j_user, credentials.neo4j_password))
 
 def create_user(tx, uid, uname):
@@ -73,18 +74,21 @@ def checkIfUserNameExists(tx, uname):
 	else:
 		return True
 
-@app.route('/movie-match/recommendUser/<username>', methods=['GET'])
+@app.route('/movie-match/api/recommendUser/<username>', methods=['GET'])
 def get_user_recommendation(username):
 	with driver.session() as session:
 		return session.write_transaction(recommendUser, username), 201
 
-@app.route('/movie-match/recommendMovie/<movie>', methods=['GET'])
+@app.route('/movie-match/api/recommendMovie/<movie>', methods=['GET'])
 def get_movie_recommendation(movie):
 	with driver.session() as session:
-		return session.write_transaction(recommendMovie, movie), 201
+		try:
+			return session.write_transaction(recommendMovie, movie), 201
+		except:
+			return "Error on recommendation", 500
 
 # JSON : {"username":"", "title":"", rating:"":0}
-@app.route('/movie-match/addRelation', methods=['POST'])
+@app.route('/movie-match/api/addRelation', methods=['POST'])
 def add_relation():
 	if not request.json:
 		abort(400)
@@ -100,11 +104,8 @@ def add_relation():
 		session.write_transaction(create_relation, request.json['username'], request.json['title'], request.json['rating'])
 	return jsonify(request.json),201
 
-
-
-
 # JSON : {"name", "movies":[{"title":"", "rating":0}]}
-@app.route('/movie-match/addUser', methods=['POST'])
+@app.route('/movie-match/api/addUser', methods=['POST'])
 def add_user():
 	if not request.json or not 'name' in request.json:
 		abort(400)
@@ -135,7 +136,6 @@ def add_user():
 	}
 	return jsonify({'user': user}), 201
 
-
-if __name__ == '__main__':
-	app.run(debug=False)
-	driver.close()
+@app.route('/movie-match/api/')
+def backendOnline():
+    return 'Backend Online!'

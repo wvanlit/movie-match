@@ -21,7 +21,7 @@ for movie in movieList:
 movieString += ']'
 
 # Create file
-target = open('../../web/js/movieList.js', 'w')
+target = open('../web/js/movieList.js', 'w')
 
 target.write(movieString)
 

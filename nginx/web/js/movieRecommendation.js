@@ -1,4 +1,4 @@
-const recommendMovieUrl='http://127.0.0.1/movie-match/recommendMovie/';
+const recommendMovieUrl='http://litdev.nl/movie-match/recommendMovie/';
 const noneFound = "None Found, Try Something Else"
 
 function recommendMovie(title){
